@@ -1,5 +1,5 @@
 CC=gcc
-FLAGS=$(shell pkg-config --cflags --libs gtk+-3.0) -Iinclude
+FLAGS=$(shell pkg-config --cflags --libs gtk+-3.0) -Iinclude -lsqlite3
 
 default:
 	mkdir -p bin
