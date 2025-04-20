@@ -7,6 +7,8 @@
 struct DBConnect_args {
 	GtkFileChooser* fileChooseDb;
 	GtkWindow* winConnect;
+	GtkSpinner* statusBusy;
+	GtkLabel* statusState;
 };
 void DBConnect(GtkWidget* sender, struct DBConnect_args* args) {
 	
@@ -14,12 +16,10 @@ void DBConnect(GtkWidget* sender, struct DBConnect_args* args) {
 	GtkBuilder* builder = gtk_builder_new_from_file(GUI_FILE);
 	
 	// Activate spinner
-	GtkSpinner* statusBusy = (GtkSpinner*) gtk_builder_get_object(builder, "statusBusy");
-	gtk_spinner_start(statusBusy);
+	gtk_spinner_start(args->statusBusy);
 	
 	// Changing Text
-	GtkLabel* statusState = (GtkLabel*) gtk_builder_get_object(builder, "statusState");
-	gtk_label_set_text(statusState, "CONNECTING TO DATABASE");
+	gtk_label_set_text(args->statusState, "CONNECTING");
 	
 	// Setting filename of database
 	strcpy(filename, g_file_get_path(gtk_file_chooser_get_file(args->fileChooseDb)));
@@ -31,22 +31,20 @@ void DBConnect(GtkWidget* sender, struct DBConnect_args* args) {
 	// Open the database
 	if (sqlite3_open(filename, &db_con) != SQLITE_OK) {
 		DisplayError(2, "SQLite could not open the database file, please try again another time.\n");
-		gtk_spinner_stop(statusBusy);
-		gtk_label_set_text(statusState, "ABORTED");
+		gtk_spinner_stop(args->statusBusy);
+		gtk_label_set_text(args->statusState, "ABORTED");
 		return;
 	}
 	
 	// Returning status
 	DisplayError(0, "SQLite successfully opened the file!\n");
-	gtk_spinner_stop(statusBusy);
-	gtk_label_set_text(statusState, "READY");
+	gtk_spinner_stop(args->statusBusy);
+	gtk_label_set_text(args->statusState, "READY");
 	
 }
 
 // Open a new database
-void DBOpen(GtkWidget* sender, gpointer no_data) {
-
-	struct DBConnect_args* args = (struct DBConnect_args*) malloc(sizeof(struct DBConnect_args*));
+void DBOpen(GtkWidget* sender, struct DBConnect_args* args) {
 	
 	// Make seperate builder
 	GtkBuilder* builder = gtk_builder_new_from_file(GUI_FILE);
@@ -62,16 +60,13 @@ void DBOpen(GtkWidget* sender, gpointer no_data) {
 	GtkWidget* btnConnectCancel = (GtkWidget*) gtk_builder_get_object(builder, "btnConnectCancel");
 	g_signal_connect(btnConnectCancel, "clicked", G_CALLBACK(CloseWindow), winConnect);
 	
-	// Create argument packet
+	// Add to argument packet
 	args->fileChooseDb = fileChooseDb;
 	args->winConnect = (GtkWindow*) winConnect;
 	
 	// Go Button
 	GtkWidget* btnConnectGo = (GtkWidget*) gtk_builder_get_object(builder, "btnConnectGo");
 	g_signal_connect(btnConnectGo, "clicked", G_CALLBACK(DBConnect), args);
-	
-	// Remove the extra builder
-	g_object_unref(builder);
 	
 }
 
@@ -109,12 +104,27 @@ int main(int argc, char* argv[]) {
 	GtkWidget* winMain = (GtkWidget*) gtk_builder_get_object(builder, "winMain");
 	g_signal_connect(winMain, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_widget_show(winMain);
+
+	/* -- Text Box -- */
+	
+	GtkWidget* txtView = (GtkWidget*) gtk_builder_get_object(builder, "txtView");
+
+	/* -- Status Items -- */
+
+	// Loading circle 
+	GtkWidget* statusBusy = (GtkWidget*) gtk_builder_get_object(builder, "statusBusy");
+
+	// Status indicator in words
+	GtkWidget* statusState = (GtkWidget*) gtk_builder_get_object(builder, "statusState");
 	
 	/* -- File Menu Items -- */
 	
 	// Open Menu Item
+	struct DBConnect_args open_args;
+	open_args.statusBusy = (GtkSpinner*) statusBusy;
+	open_args.statusState = (GtkLabel*) statusState;
 	GtkWidget* mnuOpen = (GtkWidget*) gtk_builder_get_object(builder, "mnuOpen");
-	g_signal_connect(mnuOpen, "activate", G_CALLBACK(DBOpen), NULL);
+	g_signal_connect(mnuOpen, "activate", G_CALLBACK(DBOpen), &open_args);
 	
 	// Exit Menu Item
 	GtkWidget* mnuQuit = (GtkWidget*) gtk_builder_get_object(builder, "mnuQuit");
@@ -135,18 +145,18 @@ int main(int argc, char* argv[]) {
 	g_signal_connect(mnuDelete, "activate", G_CALLBACK(DBDelete), NULL);
 	
 	// Custom SQL Item
+	struct ParseCustom_args custom_args;
+	custom_args.statusBusy = (GtkSpinner*) statusBusy;
+	custom_args.statusState = (GtkLabel*) statusState;
+	custom_args.txtDisplay = (GtkTextView*) txtView;
 	GtkWidget* mnuCustom = (GtkWidget*) gtk_builder_get_object(builder, "mnuCustom");
-	g_signal_connect(mnuCustom, "activate", G_CALLBACK(DBCustom), NULL);
+	g_signal_connect(mnuCustom, "activate", G_CALLBACK(DBCustom), &custom_args);
 	
 	/* -- Help Menu Items -- */
 	
 	// Display About
 	GtkWidget* mnuAbout = (GtkWidget*) gtk_builder_get_object(builder, "mnuAbout");
 	g_signal_connect(mnuAbout, "activate", G_CALLBACK(ShowAbout), NULL);
-	
-	/* -- Text Box -- */
-	
-	GtkWidget* txtView = (GtkWidget*) gtk_builder_get_object(builder, "txtView");
 	
 	/* -- Button Row Items -- */
 	

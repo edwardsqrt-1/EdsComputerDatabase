@@ -14,9 +14,8 @@ void DispOutput();
 // Global Variable for Filename
 static char filename[512];
 
-int runSQL(const char* command) {
+char* runSQL(const char* command) {
 	int res, c, r;
-	char res_str[500];
 
 	res = sqlite3_prepare_v2(db_con, command, -1, &db_statement, NULL);
 
@@ -42,7 +41,7 @@ int runSQL(const char* command) {
 	result_table.rows = r;
 	result_table.columns = c;
 
-	printf("%s", PrintTable(&result_table));
+	PrintTable(&result_table);
 
 
 	sqlite3_finalize(db_statement);

@@ -37,10 +37,13 @@ struct DBTable InitTable(unsigned int r, unsigned int c) {
 }
 
 // Function to print a table
-char* PrintTable(const struct DBTable *table) {
+void PrintTable(const struct DBTable *table) {
 
     // Check for a table with no columns or rows
-    if (table->columns == 0 && table->rows == 0) return "<no data given>\n";
+    if (table->columns == 0 && table->rows == 0) {
+        sprintf(output, "<no data given>\n");
+        return;
+    }
 
     // Delimiters
     char* t_start = "| ";
@@ -95,9 +98,6 @@ char* PrintTable(const struct DBTable *table) {
     // Print another delimiter to end the table
     for (int i = 0; i < tableLength; i++) strcat(output, "-");
     strcat(output, "\n");
-
-    // Return the output
-    return output;
     
 }
 

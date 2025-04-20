@@ -67,28 +67,35 @@ void ClearView(GtkWidget* sender, GtkTextView* txtView) {
   
 }
 
+// Function to add a database item
 void DBAdd(GtkWidget* sender, gpointer no_data) {
 	DisplayError(0, "Add");
 }
 
+// Function to update a database item
 void DBUpdate(GtkWidget* sender, gpointer no_data) {
 	DisplayError(0, "Update");
 }
 
+// Function to delete a database item
 void DBDelete(GtkWidget* sender, gpointer no_data) {
 	DisplayError(0, "Delete");
 }
 
+// Function to parse the custom SQL statement and send it to database
 struct ParseCustom_args {
 	GtkTextView* txtCustom;
 	GtkWindow* winCustom;
+	GtkTextView* txtDisplay;
+	GtkSpinner* statusBusy;
+	GtkLabel* statusState;
 };
 void ParseCustom(GtkWidget* sender, struct ParseCustom_args* args) {
 	
-	// Get text buffer and bounds
+	// Get text buffer and bounds; delete current contents
 	GtkTextBuffer* buff = gtk_text_view_get_buffer(args->txtCustom);
 	GtkTextIter start, end;
-	gtk_text_buffer_get_bounds(buff, &start, &end); 
+  	gtk_text_buffer_get_bounds(buff, &start, &end); 
 
 	// Get text from text buffer
 	char* command = (char*) gtk_text_buffer_get_text(buff, &start, &end, FALSE);
@@ -96,15 +103,30 @@ void ParseCustom(GtkWidget* sender, struct ParseCustom_args* args) {
 	// Close Window
 	gtk_window_close(args->winCustom);
 	
+	// Show status as sending command
+	gtk_spinner_start(args->statusBusy);
+	gtk_label_set_text(args->statusState, "SENDING COMMAND");
+
 	// Execute command in sql.h
 	if (runSQL(command) == 0) {
 		DisplayError(0, "Command was executed successfully!");
+		gtk_label_set_text(args->statusState, "COMMAND SUCCESS");
 	} else {
 		DisplayError(2, "An error was generated!");
+		gtk_label_set_text(args->statusState, "COMMAND FAIL");
 	}
+
+	// Stop spinner either way
+	gtk_spinner_stop(args->statusBusy);
+
+	// Show output
+	GtkTextBuffer* buff2 = gtk_text_view_get_buffer(args->txtDisplay);
+	gtk_text_buffer_set_text(buff2, output, strlen(output));
+	
 }
 
-void DBCustom(GtkWidget* sender, gpointer no_data) {
+// Creates a window prompting the user to make an SQL Command
+void DBCustom(GtkWidget* sender, struct ParseCustom_args* args) {
 	
 	// Make seperate builder
 	GtkBuilder* builder = gtk_builder_new_from_file(GUI_FILE);
@@ -121,9 +143,11 @@ void DBCustom(GtkWidget* sender, gpointer no_data) {
 	g_signal_connect(btnCustomCancel, "clicked", G_CALLBACK(CloseWindow), winCustom);
 	
 	// Create argument packet
-	struct ParseCustom_args* args = (struct ParseCustom_args*) malloc(sizeof(struct ParseCustom_args));
 	args->txtCustom = txtCustom;
 	args->winCustom = (GtkWindow*) winCustom;
+
+	// Status showing waiting for input
+	gtk_label_set_text(args->statusState, "WAITING FOR USER INPUT");
 	
 	// Go Button
 	GtkWidget* btnCustomGo = (GtkWidget*) gtk_builder_get_object(builder, "btnCustomGo");
