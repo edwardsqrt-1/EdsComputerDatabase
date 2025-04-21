@@ -64,7 +64,10 @@ void PrintTable(const struct DBTable *table) {
     tableLength = (table->columns - 1) * (dataWidth + 3) + commentWidth + 4;
 
     // Print top delimiter
-    for (int i = 0; i < tableLength; i++) strcat(output, "-");
+    for (int i = 0; i < tableLength; i++) {
+        if (i == 0 || i == tableLength - 1) strcat(output, "+");
+        else strcat(output, "-");
+    }
     strcat(output, "\n");
 
     // Print each row
@@ -90,13 +93,19 @@ void PrintTable(const struct DBTable *table) {
 
         // If it is the first line, print another delimiter
         /*if (r == 0) {
-            for (int i = 0; i < tableLength; i++) strcat(output, "-");
+            for (int i = 0; i < tableLength; i++) {
+                if (i == 0 || i == tableLength-1) strcat(output, "+");
+                else strcat(output, "-");
+            }
             strcat(output, "\n");
         }*/
     }
 
     // Print another delimiter to end the table
-    for (int i = 0; i < tableLength; i++) strcat(output, "-");
+    for (int i = 0; i < tableLength; i++) {
+        if (i == 0 || i == tableLength - 1) strcat(output, "+");
+        else strcat(output, "-");
+    }
     strcat(output, "\n");
     
 }

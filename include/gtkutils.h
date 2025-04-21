@@ -58,13 +58,20 @@ void DisplayError(int level, const char* message) {
 void ClearView(GtkWidget* sender, GtkTextView* txtView) {
 
  	// Get text buffer and bounds
-	GtkTextBuffer* buff = gtk_text_view_get_buffer(txtView);
-	GtkTextIter start, end;
+	GtkTextBuffer* buff = gtk_text_view_get_buffer(txtView); 
+	gtk_text_buffer_set_text(buff, "", 0);
+	gtk_text_view_set_buffer(txtView, buff);
+	/*GtkTextIter start, end;
 	gtk_text_buffer_get_bounds(buff, &start, &end); 
 
 	// Delete everything
-	gtk_text_buffer_delete(buff, &start, &end);
+	gtk_text_buffer_delete(buff, &start, &end);*/
   
+}
+
+void ShowWFilter (GtkEntry* txtSearch, gpointer data) {
+	char* key = gtk_entry_get_text(txtSearch);
+
 }
 
 // Function to add a database item
@@ -94,11 +101,11 @@ void ParseCustom(GtkWidget* sender, struct ParseCustom_args* args) {
 	
 	// Get text buffer and bounds; delete current contents
 	GtkTextBuffer* buff = gtk_text_view_get_buffer(args->txtCustom);
-	GtkTextIter start, end;
-  	gtk_text_buffer_get_bounds(buff, &start, &end); 
+	GtkTextIter c_start, c_end, t_start, t_end;
+  	gtk_text_buffer_get_bounds(buff, &c_start, &c_end); 
 
 	// Get text from text buffer
-	char* command = (char*) gtk_text_buffer_get_text(buff, &start, &end, FALSE);
+	char* command = (char*) gtk_text_buffer_get_text(buff, &c_start, &c_end, FALSE);
 	
 	// Close Window
 	gtk_window_close(args->winCustom);
@@ -120,8 +127,10 @@ void ParseCustom(GtkWidget* sender, struct ParseCustom_args* args) {
 	gtk_spinner_stop(args->statusBusy);
 
 	// Show output
-	GtkTextBuffer* buff2 = gtk_text_view_get_buffer(args->txtDisplay);
+	GtkTextBuffer* buff2 = gtk_text_view_get_buffer(args->txtDisplay); 
 	gtk_text_buffer_set_text(buff2, output, strlen(output));
+	gtk_text_view_set_buffer(args->txtDisplay, buff2);
+	strcpy(output, "\0");
 	
 }
 
@@ -135,7 +144,7 @@ void DBCustom(GtkWidget* sender, struct ParseCustom_args* args) {
 	GtkWidget* winCustom = (GtkWidget*) gtk_builder_get_object(builder, "winCustom");
 	gtk_widget_show(winCustom);
 	
-	// Cancel Button
+	// Custom SQL textbox
 	GtkTextView* txtCustom = (GtkTextView*) gtk_builder_get_object(builder, "txtCustom");
 	
 	// Cancel Button

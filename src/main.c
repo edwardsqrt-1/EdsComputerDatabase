@@ -109,6 +109,11 @@ int main(int argc, char* argv[]) {
 	
 	GtkWidget* txtView = (GtkWidget*) gtk_builder_get_object(builder, "txtView");
 
+	/* -- Text Search Box -- */
+	
+	GtkWidget* txtSearch = (GtkWidget*) gtk_builder_get_object(builder, "txtSearch");
+	g_signal_connect(txtSearch, "changed", G_CALLBACK(ShowWFilter), NULL);
+
 	/* -- Status Items -- */
 
 	// Loading circle 
@@ -170,7 +175,7 @@ int main(int argc, char* argv[]) {
 	
 	// Button to clear viewer
 	GtkWidget* btnClear = (GtkWidget*) gtk_builder_get_object(builder, "btnClear");
-	g_signal_connect(btnClear, "activate", G_CALLBACK(ClearView), txtView);
+	g_signal_connect(btnClear, "clicked", G_CALLBACK(ClearView), txtView);
 	
 	/* -- GTK Main Loop -- */
 	
