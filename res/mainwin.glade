@@ -392,6 +392,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="margin-end">5</property>
+                <property name="primary-icon-stock">gtk-find</property>
               </object>
               <packing>
                 <property name="expand">True</property>

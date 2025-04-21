@@ -69,8 +69,23 @@ void ClearView(GtkWidget* sender, GtkTextView* txtView) {
   
 }
 
-void ShowWFilter (GtkEntry* txtSearch, gpointer data) {
-	char* key = gtk_entry_get_text(txtSearch);
+void ShowWFilter (GtkEntry* txtSearch, GtkTextView* txtView) {
+	char clause[300];
+
+	sprintf(clause, "WHERE Model LIKE '%%%s%%';", gtk_entry_get_text(txtSearch));
+
+	char command[1024];
+	strcpy(command, "SELECT Maker, Model, ID FROM (SELECT Maker, Model, ID FROM Desktops UNION ALL SELECT Maker, Model, ID FROM Laptops UNION ALL SELECT Maker, Model, ID FROM Monitors UNION ALL SELECT Maker, Model, ID FROM Tablets UNION ALL SELECT Maker, Model, ID FROM Phones) ");
+	strcat(command, clause);
+
+	// Execute command in sql.h
+	if (runSQL(command) != 0) return;
+
+	// Show output
+	GtkTextBuffer* buff = gtk_text_view_get_buffer(txtView); 
+	gtk_text_buffer_set_text(buff, output, strlen(output));
+	gtk_text_view_set_buffer(txtView, buff);
+	strcpy(output, "\0");
 
 }
 

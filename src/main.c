@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
 	/* -- Text Search Box -- */
 	
 	GtkWidget* txtSearch = (GtkWidget*) gtk_builder_get_object(builder, "txtSearch");
-	g_signal_connect(txtSearch, "changed", G_CALLBACK(ShowWFilter), NULL);
+	g_signal_connect(txtSearch, "changed", G_CALLBACK(ShowWFilter), txtView);
 
 	/* -- Status Items -- */
 
