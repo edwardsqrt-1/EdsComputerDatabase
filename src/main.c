@@ -138,16 +138,28 @@ int main(int argc, char* argv[]) {
 	/* -- Edit Menu Items -- */
 	
 	// Create Record Item
+	struct ParseCRUD_args add_args;
+	add_args.statusBusy = (GtkSpinner*) statusBusy;
+	add_args.statusState = (GtkLabel*) statusState;
+	add_args.txtDisplay = (GtkTextView*) txtView;
 	GtkWidget* mnuAdd = (GtkWidget*) gtk_builder_get_object(builder, "mnuAdd");
-	g_signal_connect(mnuAdd, "activate", G_CALLBACK(DBAdd), NULL);
+	g_signal_connect(mnuAdd, "activate", G_CALLBACK(DBAdd), &add_args);
 	
 	// Update Record Item
+	struct ParseCRUD_args update_args;
+	update_args.statusBusy = (GtkSpinner*) statusBusy;
+	update_args.statusState = (GtkLabel*) statusState;
+	update_args.txtDisplay = (GtkTextView*) txtView;
 	GtkWidget* mnuUpdate = (GtkWidget*) gtk_builder_get_object(builder, "mnuUpdate");
-	g_signal_connect(mnuUpdate, "activate", G_CALLBACK(DBUpdate), NULL);
+	g_signal_connect(mnuUpdate, "activate", G_CALLBACK(DBUpdate), &update_args);
 	
 	// Delete Record Item
+	struct ParseCRUD_args delete_args;
+	delete_args.statusBusy = (GtkSpinner*) statusBusy;
+	delete_args.statusState = (GtkLabel*) statusState;
+	delete_args.txtDisplay = (GtkTextView*) txtView;
 	GtkWidget* mnuDelete = (GtkWidget*) gtk_builder_get_object(builder, "mnuDelete");
-	g_signal_connect(mnuDelete, "activate", G_CALLBACK(DBDelete), NULL);
+	g_signal_connect(mnuDelete, "activate", G_CALLBACK(DBDelete), &delete_args);
 	
 	// Custom SQL Item
 	struct ParseCustom_args custom_args;

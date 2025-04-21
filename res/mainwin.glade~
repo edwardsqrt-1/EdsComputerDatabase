@@ -832,7 +832,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkNotebook">
+          <object class="GtkNotebook" id="ntbUpdate">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="tab-pos">left</property>
@@ -1941,7 +1941,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkNotebook" id="ntbDelete1">
+          <object class="GtkNotebook" id="ntbInsert">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="tab-pos">left</property>
@@ -2048,7 +2048,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="text" translatable="yes">0</property>
-                        <property name="adjustment">adjustment14</property>
+                        <property name="adjustment">adjustment15</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2118,7 +2118,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="txtAddDesktopGPU">
+                      <object class="GtkEntry" id="txtAddDesktopGraphics">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                       </object>
@@ -2374,7 +2374,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="text" translatable="yes">0</property>
-                        <property name="adjustment">adjustment15</property>
+                        <property name="adjustment">adjustment14</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2987,7 +2987,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Tablet Maker: </property>
+                        <property name="label" translatable="yes">Monitor Maker: </property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -3023,7 +3023,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Tablet Model: </property>
+                        <property name="label" translatable="yes">Monitor Model: </property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -3106,7 +3106,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="txtAddMonitorResolution">
+                      <object class="GtkEntry" id="txtAddMonitorScreen">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                       </object>
