@@ -40,7 +40,7 @@ struct DBTable InitTable(unsigned int r, unsigned int c) {
 void PrintTable(const struct DBTable *table) {
 
     // Check for a table with no columns or rows
-    if (table->columns == 0 && table->rows == 0) {
+    if (table->columns == 0 || table->rows == 0) {
         sprintf(output, "<no data given>\n");
         return;
     }

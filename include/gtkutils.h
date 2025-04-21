@@ -85,7 +85,7 @@ void ShowWFilter (GtkEntry* txtSearch, GtkTextView* txtView) {
 	sprintf(clause, "WHERE Model LIKE '%%%s%%';", gtk_entry_get_text(txtSearch));
 
 	char command[1024];
-	strcpy(command, "SELECT Maker, Model, ID FROM (SELECT Maker, Model, ID FROM Desktops UNION ALL SELECT Maker, Model, ID FROM Laptops UNION ALL SELECT Maker, Model, ID FROM Monitors UNION ALL SELECT Maker, Model, ID FROM Tablets UNION ALL SELECT Maker, Model, ID FROM Phones) ");
+	strcpy(command, "SELECT Maker, Model, ID, Remarks FROM (SELECT Maker, Model, ID, Remarks FROM Desktops UNION ALL SELECT Maker, Model, ID, Remarks FROM Laptops UNION ALL SELECT Maker, Model, ID, Remarks FROM Monitors UNION ALL SELECT Maker, Model, ID, Remarks FROM Tablets UNION ALL SELECT Maker, Model, ID, Remarks FROM Phones) ");
 	strcat(command, clause);
 
 	// Execute command in sql.h
@@ -556,7 +556,7 @@ void ParseUpdate(GtkWidget* sender, struct ParseCRUD_args *args) {
 			id = gtk_spin_button_get_value_as_int(numUpdateStatusID);
 			
 			// Construct query and break
-			sprintf(query, "UPDATE Status SET %s=%s WHERE ID=%d;", col, new_val, id);
+			sprintf(query, "UPDATE Status SET %s=%s WHERE Status_Code=%d;", col, new_val, id);
 			break;
 
 		}
@@ -765,7 +765,7 @@ void ParseDelete(GtkWidget* sender, struct ParseCRUD_args *args) {
 			int id = gtk_spin_button_get_value_as_int(numDeleteStatusID);
 			
 			// Construct query and break
-			sprintf(query, "DELETE FROM Status WHERE ID=%d;", id);
+			sprintf(query, "DELETE FROM Status WHERE Status_Code=%d;", id);
 			break;
 
 		}
@@ -904,4 +904,40 @@ void DBCustom(GtkWidget* sender, struct ParseCustom_args* args) {
 	GtkWidget* btnCustomGo = (GtkWidget*) gtk_builder_get_object(builder, "btnCustomGo");
 	g_signal_connect(btnCustomGo, "clicked", G_CALLBACK(ParseCustom), args);
 
+}
+
+struct DBDump_args {
+	GtkTextView* txtDisplay;
+	GtkSpinner* statusBusy;
+	GtkLabel* statusState;
+};
+void DBDump(GtkMenuItem* mnuSender, struct DBDump_args* args) {
+
+	char clause[300];
+
+	gtk_spinner_start(args->statusBusy);
+	gtk_label_set_text(args->statusState, "DUMPING DATABASE");
+
+	sprintf(clause, "%s;", gtk_menu_item_get_label(mnuSender) + 5);
+
+	char command[1024];
+	strcpy(command, "SELECT * FROM ");
+	strcat(command, clause);
+
+	// Execute command in sql.h
+	if (runSQL(command) != 0) {
+		gtk_spinner_stop(args->statusBusy);
+		gtk_label_set_text(args->statusState, "FAIL");
+		return;
+	}
+
+	gtk_spinner_stop(args->statusBusy);
+	gtk_label_set_text(args->statusState, "DONE");
+
+	// Show output
+	GtkTextBuffer* buff = gtk_text_view_get_buffer(args->txtDisplay); 
+	gtk_text_buffer_set_text(buff, output, strlen(output));
+	gtk_text_view_set_buffer(args->txtDisplay, buff);
+	strcpy(output, "\0");
+	
 }

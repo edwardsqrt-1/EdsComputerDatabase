@@ -9,9 +9,10 @@ struct DBConnect_args {
 	GtkWindow* winConnect;
 	GtkSpinner* statusBusy;
 	GtkLabel* statusState;
+	GtkLabel* statusFile;
 };
 void DBConnect(GtkWidget* sender, struct DBConnect_args* args) {
-	
+
 	// Make seperate builder
 	GtkBuilder* builder = gtk_builder_new_from_file(GUI_FILE);
 	
@@ -23,7 +24,6 @@ void DBConnect(GtkWidget* sender, struct DBConnect_args* args) {
 	
 	// Setting filename of database
 	strcpy(filename, g_file_get_path(gtk_file_chooser_get_file(args->fileChooseDb)));
-	printf("%s\n", filename);
 	
 	// Closing the open dialog
 	gtk_window_close(args->winConnect);
@@ -33,9 +33,13 @@ void DBConnect(GtkWidget* sender, struct DBConnect_args* args) {
 		DisplayError(2, "SQLite could not open the database file, please try again another time.\n");
 		gtk_spinner_stop(args->statusBusy);
 		gtk_label_set_text(args->statusState, "ABORTED");
+		strcpy(filename, "\0");
 		return;
 	}
-	
+
+	// Show open database in the file status
+	gtk_label_set_text(args->statusFile, filename);
+
 	// Returning status
 	DisplayError(0, "SQLite successfully opened the file!\n");
 	gtk_spinner_stop(args->statusBusy);
@@ -121,6 +125,9 @@ int main(int argc, char* argv[]) {
 
 	// Status indicator in words
 	GtkWidget* statusState = (GtkWidget*) gtk_builder_get_object(builder, "statusState");
+
+	// Displays filename
+	GtkWidget* statusFile = (GtkWidget*) gtk_builder_get_object(builder, "statusFile");
 	
 	/* -- File Menu Items -- */
 	
@@ -128,14 +135,46 @@ int main(int argc, char* argv[]) {
 	struct DBConnect_args open_args;
 	open_args.statusBusy = (GtkSpinner*) statusBusy;
 	open_args.statusState = (GtkLabel*) statusState;
+	open_args.statusFile = (GtkLabel*) statusFile;
 	GtkWidget* mnuOpen = (GtkWidget*) gtk_builder_get_object(builder, "mnuOpen");
 	g_signal_connect(mnuOpen, "activate", G_CALLBACK(DBOpen), &open_args);
 	
 	// Exit Menu Item
 	GtkWidget* mnuQuit = (GtkWidget*) gtk_builder_get_object(builder, "mnuQuit");
 	g_signal_connect(mnuQuit, "activate", G_CALLBACK(gtk_main_quit), NULL);
+
+	/* -- View Menu Items -- */
+
+	struct DBDump_args view_args;
+	view_args.txtDisplay = (GtkTextView*) txtView;
+	view_args.statusBusy = (GtkSpinner*) statusBusy;
+	view_args.statusState = (GtkLabel*) statusState;
+
+	// Show Desktops Item
+	GtkWidget* mnuDesktops = (GtkWidget*) gtk_builder_get_object(builder, "mnuDesktops");
+	g_signal_connect(mnuDesktops, "activate", G_CALLBACK(DBDump), &view_args);
+
+	// Show Laptops Item
+	GtkWidget* mnuLaptops = (GtkWidget*) gtk_builder_get_object(builder, "mnuLaptops");
+	g_signal_connect(mnuLaptops, "activate", G_CALLBACK(DBDump), &view_args);
+
+	// Show Monitors Item
+	GtkWidget* mnuMonitors = (GtkWidget*) gtk_builder_get_object(builder, "mnuMonitors");
+	g_signal_connect(mnuMonitors, "activate", G_CALLBACK(DBDump), &view_args);
+
+	// Show Tablets Item
+	GtkWidget* mnuTablets = (GtkWidget*) gtk_builder_get_object(builder, "mnuTablets");
+	g_signal_connect(mnuTablets, "activate", G_CALLBACK(DBDump), &view_args);
+
+	// Show Phones Item
+	GtkWidget* mnuPhones = (GtkWidget*) gtk_builder_get_object(builder, "mnuPhones");
+	g_signal_connect(mnuPhones, "activate", G_CALLBACK(DBDump), &view_args);
+
+	// Show Statuses Item
+	GtkWidget* mnuStatus = (GtkWidget*) gtk_builder_get_object(builder, "mnuStatus");
+	g_signal_connect(mnuStatus, "activate", G_CALLBACK(DBDump), &view_args);
 	
-	/* -- Edit Menu Items -- */
+	/* -- Operation Menu Items -- */
 	
 	// Create Record Item
 	struct ParseCRUD_args add_args;
@@ -176,10 +215,6 @@ int main(int argc, char* argv[]) {
 	g_signal_connect(mnuAbout, "activate", G_CALLBACK(ShowAbout), NULL);
 	
 	/* -- Button Row Items -- */
-	
-	// Button to dump all information
-	GtkWidget* btnShowAll = (GtkWidget*) gtk_builder_get_object(builder, "btnShowAll");
-	//g_signal_connect(btnShowAll, "activate", G_CALLBACK(DBDelete), NULL);
 	
 	// Button to filter information
 	GtkWidget* btnFilter = (GtkWidget*) gtk_builder_get_object(builder, "btnFilter");

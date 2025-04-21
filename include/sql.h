@@ -17,7 +17,11 @@ static char filename[512];
 int runSQL(const char* command) {
 	int res, c, r;
 
+	if (!strcmp(filename, "")) return -5;
+
 	res = sqlite3_prepare_v2(db_con, command, -1, &db_statement, NULL);
+
+	if (res != SQLITE_OK) return -1;
 
 	res = sqlite3_step(db_statement);
 
