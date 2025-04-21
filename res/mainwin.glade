@@ -1759,7 +1759,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="numIDStatusUpdate">
+                      <object class="GtkSpinButton" id="numUpdateStatusID">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="text" translatable="yes">0</property>
@@ -1797,7 +1797,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBoxText" id="cmbColStatusUpdate">
+                      <object class="GtkComboBoxText" id="cmbUpdateStatusCol">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="active">0</property>
@@ -1840,7 +1840,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="txtNewStatusUpdate">
+                      <object class="GtkEntry" id="txtUpdateStatusVal">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                       </object>

@@ -145,7 +145,6 @@ void ParseAdd(GtkWidget* sender, struct ParseCRUD_args *args) {
 			strcpy(disp, gtk_entry_get_text(txtAddDesktopDisplay)); strcpy(os, gtk_entry_get_text(txtAddDesktopOS)); 
 			strcpy(com, gtk_entry_get_text(txtAddDesktopComment)); 
 
-			printf("%s, %s\n", gtk_entry_get_text(txtAddDesktopMaker), maker);
 			// Extract results (integers)
 			id = gtk_spin_button_get_value_as_int(numAddDesktopID); status = gtk_spin_button_get_value_as_int(numAddDesktopStatus);
 			
@@ -380,9 +379,249 @@ void DBAdd(GtkWidget* sender, struct ParseCRUD_args *args) {
 
 }
 
+// Function to parse addition of items to database
+void ParseUpdate(GtkWidget* sender, struct ParseCRUD_args *args) {
+
+	// Array that contains the query
+	char query[1024];
+
+	// Set Status Indicator to parsing options
+	gtk_spinner_start(args->statusBusy);
+	gtk_label_set_text(args->statusState, "PARSING OPTIONS");
+
+	// Get Notebook object to determine what page is used
+	GtkNotebook* ntbUpdate = (GtkNotebook*) gtk_builder_get_object(args->builder, "ntbUpdate");
+
+	// Find current page and create SQL Query
+	switch (gtk_notebook_get_current_page(ntbUpdate)) {
+
+		// Desktops
+		case 0: { 
+			
+			// Desktop Update Tools
+			GtkEntry* txtUpdateDesktopModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdateDesktopModel");
+			GtkSpinButton* numUpdateDesktopID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numUpdateDesktopID");
+			GtkComboBox* cmbUpdateDesktopCol = (GtkComboBox*) gtk_builder_get_object(args->builder, "cmbUpdateDesktopCol");
+			GtkEntry* txtUpdateDesktopVal = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdateDesktopVal");
+			
+			// Create variables to store information in
+			char model[50], new_val[50], col[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(col, gtk_combo_box_get_active_id(cmbUpdateDesktopCol));
+			if (!strcmp(col, "Status_Code")) strcpy(new_val, gtk_entry_get_text(txtUpdateDesktopVal));
+			else sprintf(new_val, "'%s'", gtk_entry_get_text(txtUpdateDesktopVal));
+			strcpy(model, gtk_entry_get_text(txtUpdateDesktopModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numUpdateDesktopID);
+			
+			// Construct query and break
+			sprintf(query, "UPDATE Desktops SET %s=%s WHERE ID=%d AND Model='%s';", col, new_val, id, model);
+			break;
+
+		}
+
+		// Laptops
+		case 1: {
+
+			// Laptop Update Tools
+			GtkEntry* txtUpdateLaptopModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdateLaptopModel");
+			GtkSpinButton* numUpdateLaptopID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numUpdateLaptopID");
+			GtkComboBox* cmbUpdateLaptopCol = (GtkComboBox*) gtk_builder_get_object(args->builder, "cmbUpdateLaptopCol");
+			GtkEntry* txtUpdateLaptopVal = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdateLaptopVal");
+			
+			// Create variables to store information in
+			char model[50], new_val[50], col[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(col, gtk_combo_box_get_active_id(cmbUpdateLaptopCol));
+			if (!strcmp(col, "Status_Code")) strcpy(new_val, gtk_entry_get_text(txtUpdateLaptopVal));
+			else sprintf(new_val, "'%s'", gtk_entry_get_text(txtUpdateLaptopVal));
+			strcpy(model, gtk_entry_get_text(txtUpdateLaptopModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numUpdateLaptopID);
+			
+			// Construct query and break
+			sprintf(query, "UPDATE Laptops SET %s=%s WHERE ID=%d AND Model='%s';", col, new_val, id, model);
+			break;
+
+		}
+		
+		// Monitors
+		case 2: {
+
+			// Monitor Update Tools
+			GtkEntry* txtUpdateMonitorModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdateMonitorModel");
+			GtkSpinButton* numUpdateMonitorID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numUpdateMonitorID");
+			GtkComboBox* cmbUpdateMonitorCol = (GtkComboBox*) gtk_builder_get_object(args->builder, "cmbUpdateMonitorCol");
+			GtkEntry* txtUpdateMonitorVal = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdateMonitorVal");
+			
+			// Create variables to store information in
+			char model[50], new_val[50], col[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(col, gtk_combo_box_get_active_id(cmbUpdateMonitorCol));
+			if (!strcmp(col, "Status_Code")) strcpy(new_val, gtk_entry_get_text(txtUpdateMonitorVal));
+			else sprintf(new_val, "'%s'", gtk_entry_get_text(txtUpdateMonitorVal));
+			strcpy(model, gtk_entry_get_text(txtUpdateMonitorModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numUpdateMonitorID);
+			
+			// Construct query and break
+			sprintf(query, "UPDATE Monitors SET %s=%s WHERE ID=%d AND Model='%s';", col, new_val, id, model);
+			break;
+
+		}
+			
+		// Tablets
+		case 3: {
+
+			// Tablet Update Tools
+			GtkEntry* txtUpdateTabletModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdateTabletModel");
+			GtkSpinButton* numUpdateTabletID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numUpdateTabletID");
+			GtkComboBox* cmbUpdateTabletCol = (GtkComboBox*) gtk_builder_get_object(args->builder, "cmbUpdateTabletCol");
+			GtkEntry* txtUpdateTabletVal = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdateTabletVal");
+			
+			// Create variables to store information in
+			char model[50], new_val[50], col[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(col, gtk_combo_box_get_active_id(cmbUpdateTabletCol));
+			if (!strcmp(col, "Status_Code")) strcpy(new_val, gtk_entry_get_text(txtUpdateTabletVal));
+			else sprintf(new_val, "'%s'", gtk_entry_get_text(txtUpdateTabletVal));
+			strcpy(model, gtk_entry_get_text(txtUpdateTabletModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numUpdateTabletID);
+			
+			// Construct query and break
+			sprintf(query, "UPDATE Tablets SET %s=%s WHERE ID=%d AND Model='%s';", col, new_val, id, model);
+			break;
+
+		}
+			
+		// Phones
+		case 4: {
+
+			// Phone Update Tools
+			GtkEntry* txtUpdatePhoneModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdatePhoneModel");
+			GtkSpinButton* numUpdatePhoneID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numUpdatePhoneID");
+			GtkComboBox* cmbUpdatePhoneCol = (GtkComboBox*) gtk_builder_get_object(args->builder, "cmbUpdatePhoneCol");
+			GtkEntry* txtUpdatePhoneVal = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdatePhoneVal");
+			
+			// Create variables to store information in
+			char model[50], new_val[50], col[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(col, gtk_combo_box_get_active_id(cmbUpdatePhoneCol));
+			if (!strcmp(col, "Status_Code")) strcpy(new_val, gtk_entry_get_text(txtUpdatePhoneVal));
+			else sprintf(new_val, "'%s'", gtk_entry_get_text(txtUpdatePhoneVal));
+			strcpy(model, gtk_entry_get_text(txtUpdatePhoneModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numUpdatePhoneID);
+			
+			// Construct query and break
+			sprintf(query, "UPDATE Phones SET %s=%s WHERE ID=%d AND Model='%s';", col, new_val, id, model);
+			break;
+
+		}
+			
+		// Status
+		case 5: {
+
+			// Status Addition Tools
+			GtkSpinButton* numUpdateStatusID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numUpdateStatusID");
+			GtkComboBox* cmbUpdateStatusCol = (GtkComboBox*) gtk_builder_get_object(args->builder, "cmbUpdateStatusCol");
+			GtkEntry* txtUpdateStatusVal = (GtkEntry*) gtk_builder_get_object(args->builder, "txtUpdateStatusVal");
+
+			// Create variables to store information in
+			char col[50], new_val[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(col, gtk_combo_box_get_active_id(cmbUpdateStatusCol));
+			if (!strcmp(col, "Priority")) strcpy(new_val, gtk_entry_get_text(txtUpdateStatusVal));
+			else sprintf(new_val, "'%s'", gtk_entry_get_text(txtUpdateStatusVal));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numUpdateStatusID);
+			
+			// Construct query and break
+			sprintf(query, "UPDATE Status SET %s=%s WHERE ID=%d;", col, new_val, id);
+			break;
+
+		}
+
+		// Error
+		default: {
+
+			// Display an error and return
+			DisplayError(2, "Invalid page selected!");
+			return;
+
+		}	
+
+	}
+
+	// Set Status Indicator to sending command; also close the Insert Window
+	gtk_spinner_start(args->statusBusy);
+	gtk_label_set_text(args->statusState, "SENDING COMMAND");
+	CloseWindow(NULL, args->winCRUD);
+
+	// Execute command in sql.h
+	if (runSQL(query) == 0) {
+		DisplayError(0, "Command was executed successfully!");
+		gtk_label_set_text(args->statusState, "COMMAND SUCCESS");
+	} else {
+		DisplayError(2, "An error was generated!");
+		gtk_label_set_text(args->statusState, "COMMAND FAIL");
+	}
+
+	// Stop spinner 
+	gtk_spinner_stop(args->statusBusy);
+
+	
+
+	// Show output
+	GtkTextBuffer* buff2 = gtk_text_view_get_buffer(args->txtDisplay); 
+	gtk_text_buffer_set_text(buff2, output, strlen(output));
+	gtk_text_view_set_buffer(args->txtDisplay, buff2);
+	strcpy(output, "\0");
+	
+}
+
 // Function to update a database item
 void DBUpdate(GtkWidget* sender, struct ParseCRUD_args *args) {
-	DisplayError(0, "Update");
+
+	// Create a new builder to show dialog box
+	GtkBuilder* builder = gtk_builder_new_from_file(GUI_FILE);
+
+	// Get Insert Dialog
+	GtkWidget* winUpdate = (GtkWidget*) gtk_builder_get_object(builder, "winUpdate");
+	gtk_widget_show(winUpdate);
+	args->winCRUD = (GtkWindow*) winUpdate;
+	args->builder = builder;
+
+	// Cancel Button
+	GtkWidget* btnUpdateCancel = (GtkWidget*) gtk_builder_get_object(builder, "btnUpdateCancel");
+	g_signal_connect(btnUpdateCancel, "clicked", G_CALLBACK(CloseWindow), winUpdate);
+
+	// Go Button
+	GtkWidget* btnUpdateGo = (GtkWidget*) gtk_builder_get_object(builder, "btnUpdateGo");
+	g_signal_connect(btnUpdateGo, "clicked", G_CALLBACK(ParseUpdate), args);
+
+	// Status showing waiting for input
+	gtk_label_set_text(args->statusState, "WAITING FOR USER INPUT");
+
 }
 
 // Function to delete a database item
