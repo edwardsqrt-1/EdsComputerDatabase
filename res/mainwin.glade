@@ -182,7 +182,7 @@
             <property name="can-focus">False</property>
             <property name="layout-style">end</property>
             <child>
-              <object class="GtkButton" id="btnUpdateCancel1">
+              <object class="GtkButton" id="btnDeleteCancel">
                 <property name="label" translatable="yes">Cancel</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -195,7 +195,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btnUpdateGo1">
+              <object class="GtkButton" id="btnDeleteGo">
                 <property name="label" translatable="yes">Go</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -762,7 +762,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Status Deletion</property>
+                <property name="label" translatable="yes">Delete Status</property>
               </object>
               <packing>
                 <property name="position">5</property>

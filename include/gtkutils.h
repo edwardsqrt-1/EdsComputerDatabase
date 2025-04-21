@@ -379,7 +379,7 @@ void DBAdd(GtkWidget* sender, struct ParseCRUD_args *args) {
 
 }
 
-// Function to parse addition of items to database
+// Function to parse updating of items to database
 void ParseUpdate(GtkWidget* sender, struct ParseCRUD_args *args) {
 
 	// Array that contains the query
@@ -624,9 +624,211 @@ void DBUpdate(GtkWidget* sender, struct ParseCRUD_args *args) {
 
 }
 
+// Function to parse deletion of items from database
+void ParseDelete(GtkWidget* sender, struct ParseCRUD_args *args) {
+
+	// Array that contains the query
+	char query[1024];
+
+	// Set Status Indicator to parsing options
+	gtk_spinner_start(args->statusBusy);
+	gtk_label_set_text(args->statusState, "PARSING OPTIONS");
+
+	// Get Notebook object to determine what page is used
+	GtkNotebook* ntbDelete = (GtkNotebook*) gtk_builder_get_object(args->builder, "ntbDelete");
+
+	// Find current page and create SQL Query
+	switch (gtk_notebook_get_current_page(ntbDelete)) {
+
+		// Desktops
+		case 0: { 
+			
+			// Desktop Update Tools
+			GtkEntry* txtDeleteDesktopModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtDeleteDesktopModel");
+			GtkSpinButton* numDeleteDesktopID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numDeleteDesktopID");
+			
+			// Create variables to store information in
+			char model[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(model, gtk_entry_get_text(txtDeleteDesktopModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numDeleteDesktopID);
+			
+			// Construct query and break
+			sprintf(query, "DELETE FROM Desktops WHERE ID=%d AND Model='%s';", id, model);
+			break;
+
+		}
+
+		// Laptops
+		case 1: {
+
+			// Laptop Delete Tools
+			GtkEntry* txtDeleteLaptopModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtDeleteLaptopModel");
+			GtkSpinButton* numDeleteLaptopID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numDeleteLaptopID");
+			
+			// Create variables to store information in
+			char model[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(model, gtk_entry_get_text(txtDeleteLaptopModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numDeleteLaptopID);
+			
+			// Construct query and break
+			sprintf(query, "DELETE FROM Laptops WHERE ID=%d AND Model='%s';", id, model);
+			break;
+
+		}
+		
+		// Monitors
+		case 2: {
+
+			// Monitor Delete Tools
+			GtkEntry* txtDeleteMonitorModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtDeleteMonitorModel");
+			GtkSpinButton* numDeleteMonitorID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numDeleteMonitorID");
+			
+			// Create variables to store information in
+			char model[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(model, gtk_entry_get_text(txtDeleteMonitorModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numDeleteMonitorID);
+			
+			// Construct query and break
+			sprintf(query, "DELETE FROM Monitors WHERE ID=%d AND Model='%s';", id, model);
+			break;
+
+		}
+			
+		// Tablets
+		case 3: {
+
+			// Tablet Delete Tools
+			GtkEntry* txtDeleteTabletModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtDeleteTabletModel");
+			GtkSpinButton* numDeleteTabletID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numDeleteTabletID");
+			
+			// Create variables to store information in
+			char model[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(model, gtk_entry_get_text(txtDeleteTabletModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numDeleteTabletID);
+			
+			// Construct query and break
+			sprintf(query, "DELETE FROM Tablets WHERE ID=%d AND Model='%s';", id, model);
+			break;
+
+		}
+			
+		// Phones
+		case 4: {
+
+			// Phone Delete Tools
+			GtkEntry* txtDeletePhoneModel = (GtkEntry*) gtk_builder_get_object(args->builder, "txtDeletePhoneModel");
+			GtkSpinButton* numDeletePhoneID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numDeletePhoneID");
+			
+			// Create variables to store information in
+			char model[50];
+			int id;
+
+			// Extract results (strings)
+			strcpy(model, gtk_entry_get_text(txtDeletePhoneModel));
+
+			// Extract results (integers)
+			id = gtk_spin_button_get_value_as_int(numDeletePhoneID);
+			
+			// Construct query and break
+			sprintf(query, "DELETE FROM Phones WHERE ID=%d AND Model='%s';", id, model);
+			break;
+
+		}
+			
+		// Status
+		case 5: {
+
+			// Status Addition Tools
+			GtkSpinButton* numDeleteStatusID = (GtkSpinButton*) gtk_builder_get_object(args->builder, "numDeleteStatusID");
+
+			// Extract results (integers)
+			int id = gtk_spin_button_get_value_as_int(numDeleteStatusID);
+			
+			// Construct query and break
+			sprintf(query, "DELETE FROM Status WHERE ID=%d;", id);
+			break;
+
+		}
+
+		// Error
+		default: {
+
+			// Display an error and return
+			DisplayError(2, "Invalid page selected!");
+			return;
+
+		}	
+
+	}
+
+	// Set Status Indicator to sending command; also close the Insert Window
+	gtk_spinner_start(args->statusBusy);
+	gtk_label_set_text(args->statusState, "SENDING COMMAND");
+	CloseWindow(NULL, args->winCRUD);
+
+	// Execute command in sql.h
+	if (runSQL(query) == 0) {
+		DisplayError(0, "Command was executed successfully!");
+		gtk_label_set_text(args->statusState, "COMMAND SUCCESS");
+	} else {
+		DisplayError(2, "An error was generated!");
+		gtk_label_set_text(args->statusState, "COMMAND FAIL");
+	}
+
+	// Stop spinner 
+	gtk_spinner_stop(args->statusBusy);
+
+	
+
+	// Show output
+	GtkTextBuffer* buff2 = gtk_text_view_get_buffer(args->txtDisplay); 
+	gtk_text_buffer_set_text(buff2, output, strlen(output));
+	gtk_text_view_set_buffer(args->txtDisplay, buff2);
+	strcpy(output, "\0");
+	
+}
+
 // Function to delete a database item
 void DBDelete(GtkWidget* sender, struct ParseCRUD_args *args) {
-	DisplayError(0, "Delete");
+	// Create a new builder to show dialog box
+	GtkBuilder* builder = gtk_builder_new_from_file(GUI_FILE);
+
+	// Get Delete Dialog
+	GtkWidget* winDelete = (GtkWidget*) gtk_builder_get_object(builder, "winDelete");
+	gtk_widget_show(winDelete);
+	args->winCRUD = (GtkWindow*) winDelete;
+	args->builder = builder;
+
+	// Cancel Button
+	GtkWidget* btnDeleteCancel = (GtkWidget*) gtk_builder_get_object(builder, "btnDeleteCancel");
+	g_signal_connect(btnDeleteCancel, "clicked", G_CALLBACK(CloseWindow), winDelete);
+
+	// Go Button
+	GtkWidget* btnDeleteGo = (GtkWidget*) gtk_builder_get_object(builder, "btnDeleteGo");
+	g_signal_connect(btnDeleteGo, "clicked", G_CALLBACK(ParseDelete), args);
+
+	// Status showing waiting for input
+	gtk_label_set_text(args->statusState, "WAITING FOR USER INPUT");
 }
 
 // Function to parse the custom SQL statement and send it to database
