@@ -7,12 +7,11 @@
 // And I don't desire to use malloc for this one
 char output[32768];
 
+// Database Table Structure
 struct DBTable {
-
     unsigned int rows;
     unsigned int columns;
     char*** data;
-
 };
 
 // Constructor for a table
@@ -91,14 +90,6 @@ void PrintTable(const struct DBTable *table) {
         // Use the end code
         strcat(output, t_cease);
 
-        // If it is the first line, print another delimiter
-        /*if (r == 0) {
-            for (int i = 0; i < tableLength; i++) {
-                if (i == 0 || i == tableLength-1) strcat(output, "+");
-                else strcat(output, "-");
-            }
-            strcat(output, "\n");
-        }*/
     }
 
     // Print another delimiter to end the table

@@ -38,16 +38,16 @@ void DisplayError(int level, const char* message) {
 	// Choose image based on level of error
 	switch (level) {
 	
-		case 0:
+		case 0: // Note
 			icon_name = "dialog-information";
 			break;
-		case 1:
+		case 1: // Warning (non-fatal)
 			icon_name = "dialog-warning";
 			break;
-		case 2:
+		case 2: // Error (fatal)
 			icon_name = "dialog-error";
 			break;
-		default:
+		default: // Unknown
 			icon_name = "edit-delete";
 		
 	}
@@ -67,31 +67,29 @@ void DisplayError(int level, const char* message) {
 // This function clears the text in the display window
 void ClearView(GtkWidget* sender, GtkTextView* txtView) {
 
- 	// Get text buffer and bounds
+ 	// Replace text buffer with an empty one
 	GtkTextBuffer* buff = gtk_text_view_get_buffer(txtView); 
 	gtk_text_buffer_set_text(buff, "", 0);
 	gtk_text_view_set_buffer(txtView, buff);
-	/*GtkTextIter start, end;
-	gtk_text_buffer_get_bounds(buff, &start, &end); 
-
-	// Delete everything
-	gtk_text_buffer_delete(buff, &start, &end);*/
   
 }
 
+// Function to dynamically search for a model number across all tables
 void ShowWFilter (GtkEntry* txtSearch, GtkTextView* txtView) {
+	
+	// Declare string arrays necessary to send SQL to the database
 	char clause[300];
+	char query[1024];
 
+	// Create the clause, query, and combine the two into the query
 	sprintf(clause, "WHERE Model LIKE '%%%s%%';", gtk_entry_get_text(txtSearch));
-
-	char command[1024];
-	strcpy(command, "SELECT Maker, Model, ID, Remarks FROM (SELECT Maker, Model, ID, Remarks FROM Desktops UNION ALL SELECT Maker, Model, ID, Remarks FROM Laptops UNION ALL SELECT Maker, Model, ID, Remarks FROM Monitors UNION ALL SELECT Maker, Model, ID, Remarks FROM Tablets UNION ALL SELECT Maker, Model, ID, Remarks FROM Phones) ");
-	strcat(command, clause);
+	strcpy(query, "SELECT Maker, Model, ID, Remarks FROM (SELECT Maker, Model, ID, Remarks FROM Desktops UNION ALL SELECT Maker, Model, ID, Remarks FROM Laptops UNION ALL SELECT Maker, Model, ID, Remarks FROM Monitors UNION ALL SELECT Maker, Model, ID, Remarks FROM Tablets UNION ALL SELECT Maker, Model, ID, Remarks FROM Phones) ");
+	strcat(query, clause);
 
 	// Execute command in sql.h
-	if (runSQL(command) != 0) return;
+	if (runSQL(query) != 0) return;
 
-	// Show output
+	// Show and clean output buffer
 	GtkTextBuffer* buff = gtk_text_view_get_buffer(txtView); 
 	gtk_text_buffer_set_text(buff, output, strlen(output));
 	gtk_text_view_set_buffer(txtView, buff);
@@ -307,10 +305,12 @@ void ParseAdd(GtkWidget* sender, struct ParseCRUD_args *args) {
 			int id, priority;
 
 			// Extract results (strings)
-			strcpy(descript, gtk_entry_get_text(txtAddStatusDescript)); strcpy(com, gtk_entry_get_text(txtAddStatusComment));
+			strcpy(descript, gtk_entry_get_text(txtAddStatusDescript)); 
+			strcpy(com, gtk_entry_get_text(txtAddStatusComment));
 
 			// Extract results (integers)
-			id = gtk_spin_button_get_value_as_int(numAddStatusID); priority = gtk_spin_button_get_value_as_int(numAddStatusPriority);
+			id = gtk_spin_button_get_value_as_int(numAddStatusID); 
+			priority = gtk_spin_button_get_value_as_int(numAddStatusPriority);
 			
 			// Construct query and break
 			sprintf(query, "INSERT INTO Status VALUES (%d, '%s', %d, '%s');", id, descript, priority, com);
@@ -589,8 +589,6 @@ void ParseUpdate(GtkWidget* sender, struct ParseCRUD_args *args) {
 	// Stop spinner 
 	gtk_spinner_stop(args->statusBusy);
 
-	
-
 	// Show output
 	GtkTextBuffer* buff2 = gtk_text_view_get_buffer(args->txtDisplay); 
 	gtk_text_buffer_set_text(buff2, output, strlen(output));
@@ -847,7 +845,7 @@ void ParseCustom(GtkWidget* sender, struct ParseCustom_args* args) {
   	gtk_text_buffer_get_bounds(buff, &c_start, &c_end); 
 
 	// Get text from text buffer
-	char* command = (char*) gtk_text_buffer_get_text(buff, &c_start, &c_end, FALSE);
+	char* query = (char*) gtk_text_buffer_get_text(buff, &c_start, &c_end, FALSE);
 	
 	// Close Window
 	gtk_window_close(args->winCustom);
@@ -857,7 +855,7 @@ void ParseCustom(GtkWidget* sender, struct ParseCustom_args* args) {
 	gtk_label_set_text(args->statusState, "SENDING COMMAND");
 
 	// Execute command in sql.h
-	if (runSQL(command) == 0) {
+	if (runSQL(query) == 0) {
 		DisplayError(0, "Command was executed successfully!");
 		gtk_label_set_text(args->statusState, "COMMAND SUCCESS");
 	} else {
@@ -906,6 +904,7 @@ void DBCustom(GtkWidget* sender, struct ParseCustom_args* args) {
 
 }
 
+// Function to dump a given table on the viewer
 struct DBDump_args {
 	GtkTextView* txtDisplay;
 	GtkSpinner* statusBusy;
@@ -913,28 +912,33 @@ struct DBDump_args {
 };
 void DBDump(GtkMenuItem* mnuSender, struct DBDump_args* args) {
 
+	// Declare the string arrays needed to run the SQL command
 	char clause[300];
+	char query[1024];
 
+	// Make status display that a table is being dumped
 	gtk_spinner_start(args->statusBusy);
-	gtk_label_set_text(args->statusState, "DUMPING DATABASE");
+	gtk_label_set_text(args->statusState, "DUMPING TABLE");
 
+	// Set the clause to contain the table being requested (given in the menu item text)
 	sprintf(clause, "%s;", gtk_menu_item_get_label(mnuSender) + 5);
 
-	char command[1024];
-	strcpy(command, "SELECT * FROM ");
-	strcat(command, clause);
+	// Create the query and add the clause to it
+	strcpy(query, "SELECT * FROM ");
+	strcat(query, clause);
 
-	// Execute command in sql.h
-	if (runSQL(command) != 0) {
+	// Execute command; show status as failed if SQL fails
+	if (runSQL(query) != 0) {
 		gtk_spinner_stop(args->statusBusy);
 		gtk_label_set_text(args->statusState, "FAIL");
 		return;
 	}
 
+	// Show the status as done
 	gtk_spinner_stop(args->statusBusy);
 	gtk_label_set_text(args->statusState, "DONE");
 
-	// Show output
+	// Show and clean output buffer
 	GtkTextBuffer* buff = gtk_text_view_get_buffer(args->txtDisplay); 
 	gtk_text_buffer_set_text(buff, output, strlen(output));
 	gtk_text_view_set_buffer(args->txtDisplay, buff);
